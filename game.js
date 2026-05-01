@@ -638,6 +638,7 @@ document.getElementById('menuBtn').addEventListener('click', () => {
 });
 
 // --- Initialization ---
+initGame();
 switchState('MENU');
 stats.lastFrameTime = performance.now();
 requestAnimationFrame(loop);
