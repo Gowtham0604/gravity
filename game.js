@@ -17,19 +17,17 @@ window.addEventListener('resize', resize);
 resize();
 
 // Game Constants
-const TUNNEL_W = 180; // Width of the safe zone
-const PLAYER_R = 7;
-const GRAVITY = 0.5;
+const TUNNEL_W = 280; // Width of the safe zone
+const PLAYER_R = 16;
 const MAX_SPEED = 14;
 
 // Game State
 let state = 'INIT'; // INIT, MENU, PLAYING, GAMEOVER
 let player = { x: W/2, y: H * 0.75, vx: 0 };
-let gravDir = 1; // 1 = right, -1 = left
+let mouseX = W/2;
 let tunnel = [];
 let speed = 4;
 let elapsed = 0;
-let flips = 0;
 let startTime = 0;
 let score = 0;
 let animId;
@@ -136,32 +134,21 @@ function startGame() {
     resize();
     initTunnel();
     player = { x: W/2, y: H * 0.75, vx: 0 };
-    gravDir = 1;
+    mouseX = W/2;
     speed = 4.0;
     elapsed = 0;
-    flips = 0;
     particles = [];
     trail = [];
     startTime = Date.now();
     state = 'PLAYING';
     
-    document.getElementById('flipsValue').innerText = '0';
     document.getElementById('timeValue').innerText = '0.0';
     
     if(animId) cancelAnimationFrame(animId);
     loop();
 }
 
-function flipGravity() {
-    if(state !== 'PLAYING') return;
-    gravDir *= -1;
-    flips++;
-    document.getElementById('flipsValue').innerText = flips;
-    
-    // Visual feedback for flip
-    const color = gravDir > 0 ? '#00f3ff' : '#ff00ea';
-    spawnParticles(player.x, player.y, color, 8, 0.8);
-}
+
 
 function die() {
     state = 'GAMEOVER';
@@ -190,7 +177,7 @@ function showGameOver() {
     
     // Update UI elements for Game Over state
     const logoWrapper = uiLayer.querySelector('.logo-wrapper');
-    logoWrapper.innerHTML = `<h1 id="statusMsg">SYSTEM FAILURE</h1><p class="crash-stats">${score.toFixed(1)}s SURVIVED &nbsp;•&nbsp; ${flips} FLIPS</p>`;
+    logoWrapper.innerHTML = `<h1 id="statusMsg">SYSTEM FAILURE</h1><p class="crash-stats">${score.toFixed(1)}s SURVIVED</p>`;
     uiLayer.querySelector('.subtitle').style.display = 'none';
     
     startBtn.querySelector('span').innerText = 'REBOOT SYSTEM';
@@ -209,7 +196,7 @@ function showGameOver() {
 }
 
 function drawTunnel() {
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 12;
     ctx.lineJoin = 'round';
     
     // Left Wall
@@ -262,9 +249,7 @@ function loop() {
         updateTunnel();
         
         // Player Physics
-        player.vx += gravDir * GRAVITY;
-        player.vx *= 0.90; // Friction
-        player.x += player.vx;
+        player.x += (mouseX - player.x) * 0.25;
         
         // Trail updating
         trail.unshift({x: player.x, y: player.y});
@@ -306,7 +291,7 @@ function loop() {
             const pt = trail[i];
             const ratio = 1 - (i / trail.length);
             ctx.lineWidth = PLAYER_R * 2.5 * ratio;
-            ctx.strokeStyle = gravDir > 0 ? `rgba(0,243,255,${ratio * 0.6})` : `rgba(255,0,234,${ratio * 0.6})`;
+            ctx.strokeStyle = `rgba(0,243,255,${ratio * 0.6})`;
             if(i === 0) ctx.moveTo(pt.x, pt.y);
             else ctx.lineTo(pt.x, pt.y);
         }
@@ -317,18 +302,9 @@ function loop() {
         ctx.arc(player.x, player.y, PLAYER_R, 0, Math.PI*2);
         ctx.fillStyle = '#ffffff';
         ctx.shadowBlur = 15;
-        ctx.shadowColor = gravDir > 0 ? '#00f3ff' : '#ff00ea';
+        ctx.shadowColor = '#00f3ff';
         ctx.fill();
         ctx.shadowBlur = 0;
-        
-        // Draw Direction Indicators (Arrows)
-        ctx.beginPath();
-        const dirOffset = (PLAYER_R + 6) * gravDir;
-        ctx.moveTo(player.x + dirOffset, player.y);
-        ctx.lineTo(player.x + dirOffset - (4 * gravDir), player.y - 4);
-        ctx.lineTo(player.x + dirOffset - (4 * gravDir), player.y + 4);
-        ctx.fillStyle = gravDir > 0 ? '#00f3ff' : '#ff00ea';
-        ctx.fill();
     }
     
     updateParticles();
@@ -338,7 +314,7 @@ function loop() {
         ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, 4.0 - elapsed)})`;
         ctx.font = '800 20px Outfit, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('CLICK OR SPACE TO FLIP GRAVITY', W/2, H * 0.4);
+        ctx.fillText('MOVE CURSOR TO STEER', W/2, H * 0.4);
         
         ctx.font = '400 16px Outfit, sans-serif';
         ctx.fillStyle = `rgba(148, 163, 184, ${Math.min(1, 4.0 - elapsed)})`;
@@ -351,21 +327,23 @@ function loop() {
 // Event Listeners for Interaction
 startBtn.addEventListener('click', startGame);
 
-function handleInput(e) {
+function handleMove(e) {
     if(state !== 'PLAYING') return;
-    if(e.type === 'keydown' && e.code !== 'Space') return;
-    if(e.type === 'keydown') e.preventDefault();
-    flipGravity();
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches && e.touches.length > 0) {
+        mouseX = e.touches[0].clientX - rect.left;
+    } else {
+        mouseX = e.clientX - rect.left;
+    }
 }
 
-document.addEventListener('keydown', handleInput);
-canvas.addEventListener('mousedown', handleInput);
-canvas.addEventListener('touchstart', (e) => {
+document.addEventListener('mousemove', handleMove);
+canvas.addEventListener('touchmove', (e) => {
     // Only prevent default if we're touching the canvas during gameplay
     // This allows clicking inputs and buttons in the UI
     if(state === 'PLAYING') {
         e.preventDefault();
-        handleInput(e);
+        handleMove(e);
     }
 }, {passive: false});
 
