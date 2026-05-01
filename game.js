@@ -306,7 +306,7 @@ function loop() {
             const pt = trail[i];
             const ratio = 1 - (i / trail.length);
             ctx.lineWidth = PLAYER_R * 2.5 * ratio;
-            ctx.strokeStyle = gravDir > 0 ? \`rgba(0,243,255,\${ratio * 0.6})\` : \`rgba(255,0,234,\${ratio * 0.6})\`;
+            ctx.strokeStyle = gravDir > 0 ? `rgba(0,243,255,${ratio * 0.6})` : `rgba(255,0,234,${ratio * 0.6})`;
             if(i === 0) ctx.moveTo(pt.x, pt.y);
             else ctx.lineTo(pt.x, pt.y);
         }
