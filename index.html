@@ -3,70 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Gravity | Premium Web Game</title>
-    <meta name="description" content="A fast-paced gravity flipping game with stunning neon aesthetics. Survive the twisting tunnel and top the leaderboards.">
-    <!-- Load modern Google font -->
+    <title>Stellar Drift | Premium Web Game</title>
+    <meta name="description" content="A premium web game experience.">
+    <!-- Google Fonts: Space Grotesk for a premium sci-fi/modern look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main id="app">
-        <!-- Background aesthetic elements -->
-        <div class="bg-glow"></div>
+        <!-- Background elements -->
+        <div class="bg-layer"></div>
         
-        <!-- Interactive Game Canvas -->
+        <!-- Main Game Canvas -->
         <canvas id="gameCanvas"></canvas>
         
-        <!-- Heads Up Display (during gameplay) -->
-        <header id="hud" class="hidden">
-            <div class="stat-box">
-                <span class="label">TIME</span>
-                <span class="value" id="timeValue">0.0</span>
-            </div>
-
-            <div class="stat-box">
-                <span class="label">SPEED</span>
-                <span class="value" id="speedValue">1.0x</span>
-            </div>
-            <div class="stat-box">
-                <span class="label">BEST</span>
-                <span class="value" id="bestValue">0.0</span>
-            </div>
-        </header>
-
-        <!-- UI Overlay (Menu & Game Over) -->
-        <div id="uiLayer">
-            <div class="logo-wrapper">
-                <div class="logo">NEON<br>GRAVITY</div>
-            </div>
-            <p class="subtitle">Navigate the infinite neon tunnel. Move your cursor or drag to steer. Avoid the glowing walls.</p>
+        <!-- UI Overlay Container -->
+        <div id="uiContainer">
             
-            <div class="input-group">
-                <input type="text" id="playerName" placeholder="Enter your alias" maxlength="12" autocomplete="off">
-            </div>
-
-            <button id="startBtn" class="primary-btn">
-                <span>INITIALIZE SEQUENCE</span>
-            </button>
-
-            <!-- Dynamic Leaderboard -->
-            <div id="leaderboard" class="leaderboard hidden">
-                <h3>TOP RUNNERS</h3>
-                <div class="lb-header">
-                    <span>RANK</span>
-                    <span>ALIAS</span>
-                    <span style="text-align: right;">TIME</span>
+            <!-- Main Menu -->
+            <div id="mainMenu" class="screen active">
+                <div class="brand">
+                    <h1 class="game-title">STELLAR DRIFT</h1>
+                    <p class="tagline">Navigate the cosmic flux</p>
                 </div>
-                <div id="lbContent" class="lb-content">
-                    <!-- Javascript populates entries here -->
+                
+                <div class="input-container">
+                    <input type="text" id="playerName" placeholder="Enter Pilot Name" maxlength="15" autocomplete="off">
+                </div>
+                
+                <button id="startBtn" class="btn primary">START ENGINE</button>
+                
+                <div class="leaderboard-preview">
+                    <h3>TOP PILOTS</h3>
+                    <div id="lbPreviewContent" class="lb-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                
+                <button id="toggleAudioBtnMain" class="btn icon-btn" title="Toggle Audio">🔊</button>
+            </div>
+            
+            <!-- In-Game HUD -->
+            <div id="gameHud" class="screen">
+                <div class="hud-top">
+                    <div class="score-display">
+                        <span class="label">SCORE</span>
+                        <span class="value" id="scoreValue">0</span>
+                    </div>
+                    <div class="hud-controls">
+                        <button id="pauseBtn" class="btn icon-btn" title="Pause Game">⏸️</button>
+                    </div>
+                </div>
+                <div class="hud-bottom">
+                    <div class="stat-group">
+                        <div class="stat">
+                            <span class="label">MULTIPLIER</span>
+                            <span class="value" id="multiplierValue">1x</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">SPEED</span>
+                            <span class="value" id="speedValue">1.0x</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <!-- Pause Menu Modal -->
+            <div id="pauseMenu" class="screen overlay">
+                <div class="modal">
+                    <h2>SYSTEM PAUSED</h2>
+                    <p class="subtitle">Take a breather, pilot.</p>
+                    <div class="button-group">
+                        <button id="resumeBtn" class="btn primary">RESUME</button>
+                        <button id="restartBtnPause" class="btn secondary">RESTART</button>
+                        <button id="quitBtn" class="btn danger">ABORT MISSION</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Over Modal -->
+            <div id="gameOverMenu" class="screen overlay">
+                <div class="modal">
+                    <h2 class="danger-text">HULL BREACH</h2>
+                    <div class="results">
+                        <div class="result-item">
+                            <span class="label">FINAL SCORE</span>
+                            <span class="value large" id="finalScoreValue">0</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">TIME SURVIVED</span>
+                            <span class="value" id="finalTimeValue">0.0s</span>
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button id="restartBtnGameOver" class="btn primary">TRY AGAIN</button>
+                        <button id="menuBtn" class="btn secondary">MAIN MENU</button>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </main>
-
-    <!-- Load game logic -->
     <script src="game.js"></script>
 </body>
 </html>
