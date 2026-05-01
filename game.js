@@ -125,8 +125,8 @@ document.getElementById('toggleAudioBtnMain').addEventListener('click', (e) => {
 });
 
 // --- Game Constants & State ---
-const TUNNEL_W = 260;
-const PLAYER_R = 12;
+const TUNNEL_W = 360;
+const PLAYER_R = 24;
 const BASE_SPEED = 400; // pixels per second
 
 let state = 'MENU'; // MENU, PLAYING, PAUSED, GAMEOVER
@@ -433,7 +433,7 @@ function draw() {
     if (tunnel.length > 0) {
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
-        ctx.lineWidth = 6;
+        ctx.lineWidth = 16;
         
         // Left Wall
         ctx.beginPath();
