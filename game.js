@@ -17,9 +17,9 @@ window.addEventListener('resize', resize);
 resize();
 
 // Game Constants
-const TUNNEL_W = 150; // Width of the safe zone
+const TUNNEL_W = 180; // Width of the safe zone
 const PLAYER_R = 7;
-const GRAVITY = 0.65;
+const GRAVITY = 0.5;
 const MAX_SPEED = 14;
 
 // Game State
@@ -137,7 +137,7 @@ function startGame() {
     initTunnel();
     player = { x: W/2, y: H * 0.75, vx: 0 };
     gravDir = 1;
-    speed = 5.5;
+    speed = 4.0;
     elapsed = 0;
     flips = 0;
     particles = [];
@@ -254,7 +254,7 @@ function loop() {
     
     if(state === 'PLAYING') {
         elapsed = (Date.now() - startTime) / 1000;
-        speed = Math.min(5.5 + elapsed * 0.12, MAX_SPEED);
+        speed = Math.min(4.0 + elapsed * 0.08, MAX_SPEED);
         
         document.getElementById('timeValue').innerText = elapsed.toFixed(1);
         document.getElementById('speedValue').innerText = (speed / 5).toFixed(1) + 'x';
@@ -333,6 +333,17 @@ function loop() {
     
     updateParticles();
     drawParticles();
+    
+    if(state === 'PLAYING' && elapsed < 4.0) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, 4.0 - elapsed)})`;
+        ctx.font = '800 20px Outfit, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('CLICK OR SPACE TO FLIP GRAVITY', W/2, H * 0.4);
+        
+        ctx.font = '400 16px Outfit, sans-serif';
+        ctx.fillStyle = `rgba(148, 163, 184, ${Math.min(1, 4.0 - elapsed)})`;
+        ctx.fillText('Avoid the glowing walls!', W/2, H * 0.4 + 30);
+    }
     
     animId = requestAnimationFrame(loop);
 }
